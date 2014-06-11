@@ -28,14 +28,17 @@ import android.view.View;
 
 /**
  * Created by mlux on 11.06.14.
+ * Colors from https://kuler.adobe.com/Hot-Girls-And-Traffic-Lights-color-theme-373931/
  */
 public class SpeedView extends View {
 
     private final Paint textPaint = new Paint();
     private final Paint satPaint = new Paint();
-    private final Paint greenPaint = new Paint();
-    private final Paint yellowPaint = new Paint();
-    private final Paint redPaint = new Paint();
+    private final Paint colPaint1 = new Paint();
+    private final Paint colPaint2 = new Paint();
+    private final Paint colPaint3 = new Paint();
+    private final Paint colPaint4 = new Paint();
+    private final Paint colPaint5 = new Paint();
     private int speed = -1;
     private int satellites = 0;
 
@@ -59,12 +62,22 @@ public class SpeedView extends View {
         textPaint.setTextSize(172f);
         satPaint.setColor(Color.GRAY);
         satPaint.setTextSize(24f);
-        greenPaint.setColor(Color.GREEN);
-        greenPaint.setStrokeWidth(12f);
-        yellowPaint.setColor(Color.YELLOW);
-        yellowPaint.setStrokeWidth(12f);
-        redPaint.setColor(Color.RED);
-        redPaint.setStrokeWidth(12f);
+
+        colPaint1.setColor(Color.argb(255, 5, 89, 2));
+        colPaint1.setStrokeWidth(12f);
+
+        colPaint2.setColor(Color.argb(255,242, 183, 5));
+        colPaint2.setStrokeWidth(12f);
+
+        colPaint3.setColor(Color.argb(255, 242, 116, 5));
+        colPaint3.setStrokeWidth(12f);
+
+        colPaint4.setColor(Color.argb(255, 242, 5, 5));
+        colPaint4.setStrokeWidth(12f);
+
+        colPaint5.setColor(Color.argb(255, 115, 2, 2));
+        colPaint5.setStrokeWidth(12f);
+
         setKeepScreenOn(true);
     }
 
@@ -72,30 +85,37 @@ public class SpeedView extends View {
     protected void onDraw(Canvas canvas) {
         //super.onDraw(canvas);
         float w = canvas.getWidth();
-        float offset = w / 10f;
-        float speedFactor = 5*offset * 8f / 200f;
-        Paint p = greenPaint;
+        float offsetX = w / 10f;
+        float offsetY = canvas.getHeight() / 10f;
+        float speedFactor = 5*offsetX * 8f / 160f;
+        Paint p = colPaint1;
+        textPaint.setTextSize(offsetY*3f);
+        satPaint.setTextSize(offsetY/3f);
         if (speed > -1) {
-            canvas.drawText(speed + " km/h", offset, (getHeight() - textPaint.getTextSize()) / 2, textPaint);
-            for (int i = 0; i <= Math.floor(speed / 5); i++) {
-                if (i*5>50) p=yellowPaint;
-                else if (i*5>100) p=redPaint;
-                canvas.drawRect(offset + i*speedFactor, getHeight() - offset - 128,
-                        offset + (i+1)*speedFactor-2,
-                        getHeight() - offset, p);
+            canvas.drawText(speed + "", offsetX, getHeight() - offsetY*5, textPaint);
+            for (int i = 0; i*5 <= speed; i++) {
+                if (i*5>30) p= colPaint2;
+                if (i*5>50) p= colPaint3;
+                if (i*5>100) p= colPaint4;
+                if (i*5>130) p= colPaint5;
+                canvas.drawRect(offsetX + i*speedFactor, getHeight() - offsetY*4,
+                        offsetX + (i+1)*speedFactor-4,
+                        getHeight() - offsetY, p);
             }
         } else {
-            canvas.drawText("no GPS fix yet.", offset, (getHeight() - textPaint.getTextSize()) / 2, textPaint);
-            double v = Math.random() * 150;
-            for (int i = 0; i <= Math.floor(v / 5); i++) {
-                if (i*5>50) p=yellowPaint;
-                else if (i*5>100) p=redPaint;
-                canvas.drawRect(offset + i*speedFactor, getHeight() - offset - 128,
-                        offset + (i+1)*speedFactor-2,
-                        getHeight() - offset, p);
+            canvas.drawText("no GPS fix!", offsetX, getHeight() - offsetY*5, textPaint);
+            double v = 152;
+            for (int i = 0; i*5 <= v; i++) {
+                if (i*5>=30) p= colPaint2;
+                if (i*5>=50) p= colPaint3;
+                if (i*5>=100) p= colPaint4;
+                if (i*5>=130) p= colPaint5;
+                canvas.drawRect(offsetX + i*speedFactor, getHeight() - offsetY*4,
+                        offsetX + (i+1)*speedFactor-4,
+                        getHeight() - offsetY, p);
             }
         }
-        canvas.drawText(satellites + " satellites", offset, 100, satPaint);
+        canvas.drawText(satellites + " satellites", offsetX, offsetY, satPaint);
     }
 
     public void setSpeed(int speed) {
