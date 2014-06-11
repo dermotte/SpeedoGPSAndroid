@@ -20,9 +20,7 @@ package at.juggle.speedometer.Speedo;
  */
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -41,6 +39,7 @@ public class SpeedView extends View {
     private final Paint colPaint5 = new Paint();
     private int speed = -1;
     private int satellites = 0;
+    private Paint gradPaint = null;
 
     public SpeedView(Context context) {
         super(context);
@@ -78,6 +77,7 @@ public class SpeedView extends View {
         colPaint5.setColor(Color.argb(255, 115, 2, 2));
         colPaint5.setStrokeWidth(12f);
 
+
         setKeepScreenOn(true);
     }
 
@@ -91,6 +91,14 @@ public class SpeedView extends View {
         Paint p = colPaint1;
         textPaint.setTextSize(offsetY*3f);
         satPaint.setTextSize(offsetY/3f);
+
+        if (gradPaint == null) {
+            gradPaint = new Paint();
+            gradPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), Color.BLACK, Color.argb(255, 32, 32, 128), Shader.TileMode.CLAMP));
+        }
+
+        canvas.drawPaint(gradPaint);
+
         if (speed > -1) {
             canvas.drawText(speed + "", offsetX, getHeight() - offsetY*5, textPaint);
             for (int i = 0; i*5 <= speed; i++) {
