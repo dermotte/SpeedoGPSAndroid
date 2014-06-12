@@ -44,6 +44,9 @@ public class SpeedView extends View {
     private int speed = -1;
     private int satellites = 0;
     private Paint gradPaint = null;
+    private float maxSpeedInVisualization = 150f;
+
+    private float maxSpeed = 0;
 
     public SpeedView(Context context) {
         super(context);
@@ -89,12 +92,18 @@ public class SpeedView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         //super.onDraw(canvas);
+        maxSpeed = Math.max(maxSpeed, speed);
         float w = canvas.getWidth();
         float offsetX = w / 10f;
         float offsetY = canvas.getHeight() / 10f;
-        float speedFactor = 5 * offsetX * 8f / 160f;
+        float speedFactor = 5 * offsetX * 8f / maxSpeedInVisualization;
         Paint p = colPaint1;
         textPaint.setTextSize(offsetY * 7f);
+        // setting text to red if speed > 135 km/h
+        if (speed > 135)
+            textPaint.setColor(Color.argb(255, 242, 5, 5));
+        else
+            textPaint.setColor(Color.GRAY);
         satPaint.setTextSize(offsetY / 3f);
 
         if (gradPaint == null) {
@@ -109,7 +118,7 @@ public class SpeedView extends View {
             if (9 < speed && speed < 100) s = "0" + speed;
             else if (speed <= 9) s = "00" + speed;
             canvas.drawText(s, offsetX, getHeight() - offsetY * 5, textPaint);
-            for (int i = 0; i * 5 <= speed; i++) {
+            for (int i = 0; i * 5 <= Math.min(maxSpeedInVisualization, speed); i++) {
                 if (i * 5 > 30) p = colPaint2;
                 if (i * 5 > 50) p = colPaint3;
                 if (i * 5 > 100) p = colPaint4;
@@ -120,7 +129,7 @@ public class SpeedView extends View {
             }
         } else {
             canvas.drawText("NFX", offsetX, getHeight() - offsetY * 5, textPaint);
-            double v = 152;
+            double v = Math.random()*maxSpeedInVisualization;
             for (int i = 0; i * 5 <= v; i++) {
                 if (i * 5 >= 30) p = colPaint2;
                 if (i * 5 >= 50) p = colPaint3;
