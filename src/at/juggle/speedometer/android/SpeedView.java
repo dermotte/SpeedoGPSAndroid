@@ -1,4 +1,4 @@
-package at.juggle.speedometer.Speedo;
+package at.juggle.speedometer.android;
 /*
     Copyright (C) 2014  Mathias Lux, mathias@juggle.at
 
@@ -66,10 +66,12 @@ public class SpeedView extends View {
     private void init() {
         textPaint.setColor(Color.GRAY);
         textPaint.setTextSize(172f);
-        textPaint.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/ELEKTRA_.ttf"));
+        Typeface elektraFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/ELEKTRA_.ttf");
+        textPaint.setTypeface(elektraFont);
 
         satPaint.setColor(Color.GRAY);
-        satPaint.setTextSize(24f);
+        satPaint.setTextSize(32f);
+        satPaint.setTypeface(elektraFont);
 
         colPaint1.setColor(Color.argb(255, 5, 89, 2));
         colPaint1.setStrokeWidth(12f);
@@ -114,9 +116,7 @@ public class SpeedView extends View {
         canvas.drawPaint(gradPaint);
 
         if (speed > -1) {
-            String s = speed + "";
-            if (9 < speed && speed < 100) s = "0" + speed;
-            else if (speed <= 9) s = "00" + speed;
+            String s = getStringFromSpeed(speed);
             canvas.drawText(s, offsetX, getHeight() - offsetY * 5, textPaint);
             for (int i = 0; i * 5 <= Math.min(maxSpeedInVisualization, speed); i++) {
                 if (i * 5 > 30) p = colPaint2;
@@ -141,6 +141,17 @@ public class SpeedView extends View {
             }
         }
 //        canvas.drawText(satellites + " satellites", offsetX, offsetY, satPaint);
+        String s = "max:  " + getStringFromSpeed((int) maxSpeed) + " km/h";
+        Rect rect = new Rect();
+        satPaint.getTextBounds(s, 0, s.length(), rect);
+        canvas.drawText(s, getWidth() - offsetX - rect.width(), offsetY, satPaint);
+    }
+
+    private String getStringFromSpeed(int speed) {
+        String s = speed + "";
+        if (9 < speed && speed < 100) s = "0" + speed;
+        else if (speed <= 9) s = "00" + speed;
+        return s;
     }
 
     public void setSpeed(int speed) {

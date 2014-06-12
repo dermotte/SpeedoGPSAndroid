@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <at.juggle.speedometer.android.SettingsDialog
+            android:title="Title"
+            android:dialogMessage="Message"
+            android:negativeButtonText="test"
+            >
     <CheckBoxPreference
             android:key="pref_sync"
             android:title="Show satellites"
             android:summary="Show the number of satellites."
             android:defaultValue="true" />
+    </at.juggle.speedometer.android.SettingsDialog>
     <!--ListPreference
             android:dependency="pref_sync"
             android:key="pref_syncConnectionType"

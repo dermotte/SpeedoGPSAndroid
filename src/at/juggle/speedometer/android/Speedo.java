@@ -1,4 +1,4 @@
-package at.juggle.speedometer.Speedo;
+package at.juggle.speedometer.android;
 /*
     Copyright (C) 2014  Mathias Lux, mathias@juggle.at
 
@@ -26,6 +26,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import at.juggle.speedometer.Speedo.R;
 
 /**
  * Borrowed Code from GPSSpeedo https://code.google.com/p/gpspeedo/
@@ -170,5 +171,11 @@ public class Speedo extends Activity {
             return (rad * 180.0 / Math.PI);
         }
     }
+//    public boolean onTouchEvent(MotionEvent event) {
+//        SettingsDialog d = new SettingsDialog(getApplicationContext(), null);
+//        d.showDialog(null);
+//        return true;
+//    }
+
 
 }

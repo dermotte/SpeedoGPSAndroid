@@ -6,7 +6,7 @@
         >
     <view android:layout_width="fill_parent"
           android:layout_height="fill_parent"
-          class="at.juggle.speedometer.Speedo.SpeedView" android:id="@+id/view"
+          class="at.juggle.speedometer.android.SpeedView" android:id="@+id/view"
           android:layout_gravity="center_horizontal"/>
 </LinearLayout>
 
