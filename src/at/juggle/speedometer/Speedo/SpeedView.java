@@ -24,6 +24,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.*;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -42,6 +43,7 @@ public class SpeedView extends View {
     private final Paint colPaint5 = new Paint();
     private int speed = -1;
     private int satellites = 0;
+    private Paint gradPaint = null;
 
     public SpeedView(Context context) {
         super(context);
@@ -94,6 +96,14 @@ public class SpeedView extends View {
         Paint p = colPaint1;
         textPaint.setTextSize(offsetY * 7f);
         satPaint.setTextSize(offsetY / 3f);
+
+        if (gradPaint == null) {
+            gradPaint = new Paint();
+            gradPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), Color.BLACK, Color.argb(255, 32, 32, 128), Shader.TileMode.CLAMP));
+        }
+
+        canvas.drawPaint(gradPaint);
+
         if (speed > -1) {
             String s = speed + "";
             if (9 < speed && speed < 100) s = "0" + speed;
