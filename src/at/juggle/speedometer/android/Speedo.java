@@ -21,18 +21,20 @@ package at.juggle.speedometer.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.gesture.GestureOverlayView;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import at.juggle.speedometer.Speedo.R;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
 /**
  * Borrowed Code from GPSSpeedo https://code.google.com/p/gpspeedo/
  */
 
-public class Speedo extends Activity {
+public class Speedo extends Activity  {
 
     private LocationManager lm;
     private LocationListener locationListener;
@@ -44,6 +46,8 @@ public class Speedo extends Activity {
     private Float text_size; // Preference Float
 
     protected SpeedView speedView;
+
+
 
     /**
      * Called when the activity is first created.
@@ -61,8 +65,6 @@ public class Speedo extends Activity {
         // setting and running location manager
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyLocationListener();
-
-
     }
 
     @Override
@@ -97,17 +99,18 @@ public class Speedo extends Activity {
                 positions[counter][1] = loc.getLongitude();
                 times[counter] = loc.getTime();
 
+                try {
+                    // get the distance and time between the current position, and the previous position.
+                    // using (counter - 1) % data_points doesn't wrap properly
+                    d1 = distance(positions[counter][0], positions[counter][1], positions[(counter + (data_points - 1)) % data_points][0], positions[(counter + (data_points - 1)) % data_points][1]);
+                    t1 = times[counter] - times[(counter + (data_points - 1)) % data_points];
+                } catch (NullPointerException e) {
+                    //all good, just not enough data yet.
+                }
+
                 if (loc.hasSpeed()) {
                     speed = loc.getSpeed() * 1.0; // need to * 1.0 to get into a double for some reason...
                 } else {
-                    try {
-                        // get the distance and time between the current position, and the previous position.
-                        // using (counter - 1) % data_points doesn't wrap properly
-                        d1 = distance(positions[counter][0], positions[counter][1], positions[(counter + (data_points - 1)) % data_points][0], positions[(counter + (data_points - 1)) % data_points][1]);
-                        t1 = times[counter] - times[(counter + (data_points - 1)) % data_points];
-                    } catch (NullPointerException e) {
-                        //all good, just not enough data yet.
-                    }
                     speed = d1 / t1; // m/s
                 }
                 counter = (counter + 1) % data_points;
@@ -126,6 +129,7 @@ public class Speedo extends Activity {
 //                }
 //                displayText(speed.intValue());
                 speedView.setSpeed(speed.intValue());
+                speedView.addDistance(d1);
             } else {
                 speedView.setSpeed(-1);
             }

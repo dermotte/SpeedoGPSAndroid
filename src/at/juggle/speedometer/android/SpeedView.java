@@ -26,13 +26,18 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.*;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by mlux on 11.06.14.
  * Colors from https://kuler.adobe.com/Hot-Girls-And-Traffic-Lights-color-theme-373931/
  */
-public class SpeedView extends View {
+public class SpeedView extends View implements View.OnTouchListener {
 
     private final Paint textPaint = new Paint();
     private final Paint satPaint = new Paint();
@@ -47,19 +52,27 @@ public class SpeedView extends View {
     private float maxSpeedInVisualization = 150f;
 
     private float maxSpeed = 0;
+    private double distance = 0;
+    DecimalFormat df = new DecimalFormat("##00.00");
+
+    private GestureDetector mDetector;
+    private Context ctx;
 
     public SpeedView(Context context) {
         super(context);
+        ctx = context;
         init();
     }
 
     public SpeedView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        ctx = context;
         init();
     }
 
     public SpeedView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        ctx = context;
         init();
     }
 
@@ -70,7 +83,7 @@ public class SpeedView extends View {
         textPaint.setTypeface(elektraFont);
 
         satPaint.setColor(Color.GRAY);
-        satPaint.setTextSize(32f);
+        satPaint.setTextSize(48f);
         satPaint.setTypeface(elektraFont);
 
         colPaint1.setColor(Color.argb(255, 5, 89, 2));
@@ -89,6 +102,7 @@ public class SpeedView extends View {
         colPaint5.setStrokeWidth(12f);
 
         setKeepScreenOn(true);
+        setOnTouchListener(this);
     }
 
     @Override
@@ -106,7 +120,7 @@ public class SpeedView extends View {
             textPaint.setColor(Color.argb(255, 242, 5, 5));
         else
             textPaint.setColor(Color.GRAY);
-        satPaint.setTextSize(offsetY / 3f);
+        satPaint.setTextSize(offsetY / 2f);
 
         if (gradPaint == null) {
             gradPaint = new Paint();
@@ -129,7 +143,7 @@ public class SpeedView extends View {
             }
         } else {
             canvas.drawText("NFX", offsetX, getHeight() - offsetY * 5, textPaint);
-            double v = Math.random()*maxSpeedInVisualization;
+            double v = Math.random() * maxSpeedInVisualization;
             for (int i = 0; i * 5 <= v; i++) {
                 if (i * 5 >= 30) p = colPaint2;
                 if (i * 5 >= 50) p = colPaint3;
@@ -145,6 +159,10 @@ public class SpeedView extends View {
         Rect rect = new Rect();
         satPaint.getTextBounds(s, 0, s.length(), rect);
         canvas.drawText(s, getWidth() - offsetX - rect.width(), offsetY, satPaint);
+        s = "dist:  " + df.format(distance / 1000d) + " km";
+        rect = new Rect();
+        satPaint.getTextBounds(s, 0, s.length(), rect);
+        canvas.drawText(s, getWidth() - offsetX - rect.width(), offsetY + rect.height() * 2, satPaint);
     }
 
     private String getStringFromSpeed(int speed) {
@@ -159,7 +177,29 @@ public class SpeedView extends View {
         invalidate();
     }
 
+
     public void setSatellites(int satellites) {
         this.satellites = satellites;
     }
+
+    public void addDistance(double meters) {
+        this.distance += meters;
+    }
+
+
+    public void reset() {
+        distance = 0d;
+        maxSpeed = 0;
+        invalidate();
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+        reset();
+        Log.i("tag", "touch event in speedView (" + x + "  " + y + ")");
+        return true;
+    }
+
 }
