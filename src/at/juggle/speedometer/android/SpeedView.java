@@ -38,7 +38,7 @@ import java.text.DecimalFormat;
  * Colors from https://kuler.adobe.com/Hot-Girls-And-Traffic-Lights-color-theme-373931/
  */
 public class SpeedView extends View implements View.OnTouchListener {
-
+    private long lastTouch = 0;
     private final Paint textPaint = new Paint();
     private final Paint satPaint = new Paint();
     private final Paint colPaint1 = new Paint();
@@ -158,11 +158,11 @@ public class SpeedView extends View implements View.OnTouchListener {
         String s = "max:  " + getStringFromSpeed((int) maxSpeed) + " km/h";
         Rect rect = new Rect();
         satPaint.getTextBounds(s, 0, s.length(), rect);
-        canvas.drawText(s, getWidth() - offsetX - rect.width(), offsetY, satPaint);
+        canvas.drawText(s, getWidth() - offsetX / 2 - rect.width(), offsetY, satPaint);
         s = "dist:  " + df.format(distance / 1000d) + " km";
         rect = new Rect();
         satPaint.getTextBounds(s, 0, s.length(), rect);
-        canvas.drawText(s, getWidth() - offsetX - rect.width(), offsetY + rect.height() * 2, satPaint);
+        canvas.drawText(s, getWidth() - offsetX / 2 - rect.width(), offsetY + rect.height() * 2, satPaint);
     }
 
     private String getStringFromSpeed(int speed) {
@@ -197,8 +197,11 @@ public class SpeedView extends View implements View.OnTouchListener {
     public boolean onTouch(View view, MotionEvent motionEvent) {
         float x = motionEvent.getX();
         float y = motionEvent.getY();
-        reset();
-        Log.i("tag", "touch event in speedView (" + x + "  " + y + ")");
+        if ( motionEvent.getAction() == MotionEvent.ACTION_DOWN && x > 2 * getWidth() / 3 && y < getWidth() / 3) {
+            if (motionEvent.getEventTime() - lastTouch < 220) reset();
+            else lastTouch = motionEvent.getEventTime();
+        }
+//        Log.i("tag", "touch event in speedView (" + x + "  " + y + ")");
         return true;
     }
 
